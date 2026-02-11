@@ -1,6 +1,6 @@
 # 🏗️ 12-Month Staff Engineer Roadmap — Path B
 
-**Target:** Staff Engineer at Qualcomm, NVIDIA, AMD  
+**Target:** Staff Engineer  
 **Core Stack:** C++ · Linux · Concurrency · Hardware Architecture · AI/ML Integration  
 **Start Date:** 2026-02-11  
 
