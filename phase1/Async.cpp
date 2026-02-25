@@ -5,6 +5,7 @@ mutex - it is used for orderly access of resource or critical section
 locks - used to lock specific section of code to achieve mutual exclusive.
 async - Tasks based parallelism. chunks of works. async is an api to launch
         these tasks and make sure work is load-balanced. 
+atomic - lock-free mechanism.
 
 Policies of Async:
     1. std::launch::async -- creates new thread and executes when async is created
