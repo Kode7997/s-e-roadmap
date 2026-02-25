@@ -7,6 +7,7 @@
 #include <utility>
 #include <stdexcept>
 #include <string>
+//#include <unistd.h>
 
 // Custom deleter — ensures fclose is called on destruction
 struct FileCloser {
@@ -32,15 +33,17 @@ class FileDescriptor {
     int fd_ = -1;
 public:
     explicit FileDescriptor(int fd) noexcept : fd_(fd) {}
-    ~FileDescriptor() { if (fd_ >= 0) ::close(fd_); }
+    ~FileDescriptor() { 
+    //    if (fd_ >= 0) ::close(fd_); 
+    }
 
     // Move-only
     FileDescriptor(FileDescriptor&& other) noexcept
         : fd_(std::exchange(other.fd_, -1)) {}
     FileDescriptor& operator=(FileDescriptor&& other) noexcept {
         if (this != &other) {
-            if (fd_ >= 0) ::close(fd_);
-            fd_ = std::exchange(other.fd_, -1);
+            // if (fd_ >= 0) ::close(fd_);
+            // fd_ = std::exchange(other.fd_, -1);
         }
         return *this;
     }
