@@ -16,9 +16,10 @@ class String{
         {
             string_ = new char[size_ + 1];
             
-            for(int i=0;i<size_;i++){
-                string_[i] = s[i];
-            }
+            // for(int i=0;i<size_;i++){
+            //     string_[i] = s[i];
+            // }
+            strcpy(string_, s.c_str());  // Easier than loop
 
             std::cout<<"string_: "<<string_<<" size: "<<size_<<std::endl;
         }
@@ -26,17 +27,18 @@ class String{
         // Destructor
         ~String()
         {
-            if(size_ > 0){
+            if(size_ >= 0){
                 delete[] string_;
+
                 std::cout<<"Destroyed object "<<this<<" to avoid memory leaks"<<std::endl;
             }
         }
         // Copy constructor
-        String(const String& other) {
+        String(const String& other):string_(nullptr), size_(0) {
             
             std::cout<<"Copy Construct"<<std::endl;
 
-            if(other.size_ <= 0) return;
+            if(other.size_ < 0) return;
 
             this->size_ = other.size_;
             this->string_ = new char[size_ + 1];
@@ -55,6 +57,7 @@ class String{
             
             if(this->size_ > 0){
                 delete[] this->string_;
+                this->string_ = nullptr;
                 this->size_ = 0;
             }
 
@@ -81,14 +84,20 @@ class String{
             std::cout<<"moved string: "<<this->string_<<std::endl;
         }
 
+        
         // // move assignment
         String& operator=(String&& other) noexcept {
 
             if(this == &other) return *this;
 
+            if(this->size_ > 0) {      // free the old data in heap memory else mem leak
+                delete[] this->string_;
+                this->string_ = nullptr;
+            }
+
             if (other.size_ > 0){
                 this->size_ = other.size_;
-                this->string_ = other.string_;
+                this->string_ = other.string_; // steal the pointer
             }
 
             other.size_ = 0;
@@ -109,11 +118,14 @@ int main()
 
     s3 = s1; // copy assignment
 
+    String s5("Move");
+    s5 = std::move(s);
+
     // move constructor
     String s4 = std::move(s1);   // lvalue to rvalue
 
-    String s5("Move");
-    s5 = std::move(s);
+    int a;
+    std::cin>>a;
 
     return 0;
 }
