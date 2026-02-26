@@ -34,7 +34,8 @@ Note:
         iv. Move Constructor T(const T&&) -- steal Resources(C++11)
         v. Move Assignment T& operator=(T&&) --steal Resources(C++11)
 
-        As compiler defines trivial members if not defined but doesn't know resource is owned or not.
+        As compiler defines trivial members if not defined but doesn't know resource is owned/created or not.
+    - Or Use smart pointers which does the same handling resource propely.
 */
 
 #include <iostream>
