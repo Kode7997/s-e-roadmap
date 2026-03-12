@@ -177,6 +177,7 @@ void test_1_basic_mmap() {
     {   
         std::cout<<"Compute READ"<<std::endl;
         StopWatch sw;
+        sw.start_timer()
         MMAP mmap("test_mmap.txt");
         std::cout << "Content: " << mmap.to_string() <<std::endl;
         sw.print_duration();
@@ -190,6 +191,7 @@ void test_1_basic_mmap() {
 
         StopWatch sw1;
 
+        sw1.start_timer()
         while(true){
             ssize_t n = read(fd, buffer, sizeof(buffer));
             
