@@ -7,6 +7,7 @@
 
 struct BadCacheLineData {
     std::atomic<int> cnt1 = 0;
+    
     //adding padding to avoid false sharing or another method is to use alignas(64) to align the data to cache line size.
     //char padding[64 - sizeof(std::atomic<int>)];
     std::atomic<int> cnt2 = 0;
@@ -28,7 +29,7 @@ struct ModernCounters {
 typedef struct BadCacheLineData bcl;
 
 int main() {
- 
+    std::cout<<"size: "<<sizeof(BadCacheLineData)<<std::endl;
     size_t n = 10000000;
 
     bcl data;
@@ -39,6 +40,7 @@ int main() {
         for(size_t i=0;i<n;i++){
             //std::cout<<"cnt1: "<<data.cnt1<<std::endl;
             data.cnt1++;
+            data.cnt2++;
         }
         sw.print_duration();
     });
