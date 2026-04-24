@@ -7,8 +7,11 @@
 #include <utility>
 #include <stdexcept>
 #include <string>
+#include <cstring>
 //#include <unistd.h>
-
+#include <io.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 // Custom deleter — ensures fclose is called on destruction
 struct FileCloser {
     void operator()(FILE* f) const noexcept {
@@ -33,8 +36,16 @@ class FileDescriptor {
     int fd_ = -1;
 public:
     explicit FileDescriptor(int fd) noexcept : fd_(fd) {}
+
+    FileDescriptor(const char* path, int flags, int pmode = _S_IREAD | _S_IWRITE) {
+        fd_ = ::_open(path, flags, pmode);
+        if (fd_ < 0) {
+            throw std::runtime_error(std::string("Failed to open fd for file: ") + path);
+        }
+    }
+
     ~FileDescriptor() { 
-       if (fd_ >= 0) ::close(fd_); 
+       if (fd_ >= 0) ::_close(fd_); 
     }
 
     // Move-only
@@ -42,7 +53,7 @@ public:
         : fd_(std::exchange(other.fd_, -1)) {}
     FileDescriptor& operator=(FileDescriptor&& other) noexcept {
         if (this != &other) {
-            if (fd_ >= 0) ::close(fd_);
+            if (fd_ >= 0) ::_close(fd_);
             fd_ = std::exchange(other.fd_, -1);
         }
         return *this;
@@ -59,6 +70,11 @@ public:
 int main() {
     auto f = open_file("test.txt", "w");
     std::fprintf(f.get(), "Hello RAII\n");
+
+    FileDescriptor fd("test_fd.txt", _O_CREAT | _O_TRUNC | _O_WRONLY, _S_IREAD | _S_IWRITE);
+    const char* msg = "Hello FD RAII\n";
+    ::_write(fd.get(), msg, static_cast<unsigned int>(std::strlen(msg)));
+
     // f automatically closed here — no leak possible
     return 0;
 }
