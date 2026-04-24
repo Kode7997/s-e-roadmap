@@ -1,6 +1,6 @@
 
 /*
-This file explain unique_ptr and it's capabailities and use-cases
+This file explain unique_ptr, it's capabailities and use-cases
 
 - One owner access memory at a time. when owner destroyed memory is freed.
 - Give exclusive ownership to a pointer no other can access reserved memory
@@ -111,6 +111,18 @@ int main() {
 
     auto borrow_ref_obj = std::make_unique<Resource>(200);
     borrow_ref(*borrow_ptr);
+
+    // e.g: for 5 - custom deleter
+    auto custom_deleter = [](Resource* ptr) {
+        std::cout << "Custom deleter invoked for resource id: " << ptr->getId() << std::endl;
+        delete ptr;
+    };
+
+    std::unique_ptr<Resource, decltype(custom_deleter)> custom_resource(
+        new Resource(300),
+        custom_deleter
+    );
+    custom_resource->display();
 
     return 0;
 }
