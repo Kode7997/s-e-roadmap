@@ -83,6 +83,7 @@ void test_cyclic_reference() {
     struct Node{
         int id;
         std::shared_ptr<Node> next;
+        std::weak_ptr<Node> prev;
 
         Node(int id) :id(id), next(nullptr) {
             std::cout<<"Node Ctor"<<std::endl;
@@ -93,30 +94,52 @@ void test_cyclic_reference() {
         }
     };
 
-    auto display = [](std::shared_ptr<Node>& node) {
-        std::cout<<"Ref Count of "<<node->id<<" count: "<<node.use_count()<<std::endl;
+    auto display = [](const std::shared_ptr<Node>& node) {
+        std::cout<<"Node "<<node->id<<" use_count: "<<node.use_count()<<std::endl;
     };
-    // node1->node2->node3->node1
+
+    auto display_all_counts = [&](const std::string& title,
+                                  const std::shared_ptr<Node>& node1,
+                                  const std::shared_ptr<Node>& node2,
+                                  const std::shared_ptr<Node>& node3) {
+        std::cout<<"\n"<<title<<std::endl;
+        display(node1);
+        display(node2);
+        display(node3);
+    };
+
+    // Ownership model:
+    // next = shared (owner link), prev = weak (non-owner link)
+    // This keeps bidirectional navigation but prevents cyclic ownership.
 
     auto node1 = std::make_shared<Node>(1);
     auto node2 = std::make_shared<Node>(2);
     auto node3 = std::make_shared<Node>(3);
 
-    display(node1);
-    display(node2);
-    display(node3);
-
-    std::cout<<"Display ref count after cyclic reference"<<std::endl;
+    display_all_counts("Step 1: after creation (each has exactly 1 owner)", node1, node2, node3);
 
     node1->next = node2;
+    display_all_counts("Step 2: node1->next = node2 (node2 count +1)", node1, node2, node3);
+
     node2->next = node3;
-    node3->next = node1;
+    display_all_counts("Step 3: node2->next = node3 (node3 count +1)", node1, node2, node3);
 
-    display(node1);
-    display(node2);
-    display(node3);
+    // Weak back-links: these do NOT increase use_count
+    node2->prev = node1;
+    node3->prev = node2;
+    node1->prev = node3;
+    display_all_counts("Step 4: weak back-links set (counts unchanged)", node1, node2, node3);
 
-}   // destructor is never called because object is shared one another causing referential loop.
+    // lock() creates a temporary shared_ptr while in scope
+    if (auto locked_prev = node1->prev.lock()) {
+        std::cout<<"\nStep 5: lock(node1->prev) gives node id: "<<locked_prev->id
+                 <<", temporary use_count: "<<locked_prev.use_count()<<std::endl;
+    }
+    display_all_counts("Step 6: after lock scope exits (count goes back)", node1, node2, node3);
+
+    std::cout<<"\nExiting function... Node dtors will run because there is no shared_ptr cycle."<<std::endl;
+
+}   // weak_ptr breaks the cycle by keeping at least one non-owning edge.
 
 
 
