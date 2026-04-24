@@ -74,7 +74,7 @@ public:
         delete[] data_;
 
         // steal the pointer
-        data_ = nullptr;
+        data_ = other.data_;
         size_ = other.size_;
 
         // invalidate the source

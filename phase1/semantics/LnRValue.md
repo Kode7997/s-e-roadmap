@@ -47,7 +47,7 @@ y = 20;     // x is also 20.
 **use-case**: pass by reference. this avoids copy the whole content.
 
 ```cpp
-void process(intt& var){}
+void process(int& var){}
 
 int x = 10;
 process(x);
