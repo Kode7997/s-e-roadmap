@@ -27,7 +27,7 @@ Note:
         - Called in the reverse order of constructor call becuase of last class may depend on previous class
         - Destructor may not be called when there are exception in the constructor as object creation itself is not succesful
 5. Rule of 5 in Modern CPP (C++11)
-    - If Class is owns any resources, developer must define following 5 members
+    - If Class owns any resources, developer must define following 5 members
         i. Destructor ~T() - to free resource
         ii. Copy Construct T(const T&) -- Deep Copy
         iii. Copy Assignment T& operator=(const T&) -- Deep copy
