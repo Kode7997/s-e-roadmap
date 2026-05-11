@@ -1,7 +1,7 @@
 # MMAP - Memory Mapped file
 
 Mapping of -
-        [Files, Devices, Anonymous shared Memory, frame buffer (GPU), PIPE, Any resource with sequential data, HW registers] to the Process 
+        [Files, Devices, Anonymous shared Memory, frame buffer (GPU), PIPE, Any resource with sequential data, HW registers] to the Process
         virtual address space.
 
 ## Use-Cases
@@ -67,3 +67,6 @@ Mapping of -
     b. mmap maps to FILE on disk via virtual address in page table
 
     Above two are different entries in the page table.
+    - malloc memory itself: no kernel duplicate payload.
+    - read/write path: yes, usually copy between user and kernel space.
+    - Cases that reduce/avoid copies: mmap (file mapping), sendfile, splice, some io_uring paths, and specific DMA/direct-I/O setups.
