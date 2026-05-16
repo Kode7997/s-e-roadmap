@@ -55,13 +55,14 @@ class CPY_MOV {
                                 // but vec = other.vec // does a copy
         }
 
-        other.vec.clear();
+        //other.vec.clear(); // this is redundant with swap
     }
 
 };
 
 
 int main() {
+    
     std::cout<<"Benchmark CPY and MOV"<<std::endl;
     std::vector<CPY_MOV> cObj(1000000);
 
